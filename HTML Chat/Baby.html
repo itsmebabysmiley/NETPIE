@@ -1,0 +1,36 @@
+<script src="https://cdn.netpie.io/microgear.js"></script>
+
+<script>
+    const APPID = "NopparatProject";
+	const KEY = "2JnP3uh27bC9BZE";
+	const SECRET = "m3KgbRT7tKhry9awxRlloody9";
+
+    const MYNAME = "Baby";        // ชื่อของตัวเอง
+    const YOURNAME = "Smiley";         // ชื่อของเพื่อนที่จะคุยด้วย
+
+    var microgear = Microgear.create({
+        key: KEY,
+        secret: SECRET,
+    });
+
+    microgear.on('message',function(topic,msg) {
+        document.getElementById("data").innerHTML = msg;
+    });
+
+    microgear.on('connected', function() {
+        microgear.setAlias(MYNAME);     // ตั้งชื่อตัวเอง
+        document.getElementById("data").innerHTML = "Now I am connected with netpie..."; 
+
+        setInterval(function() {
+            // ใช้ฟังก์ชั่นchatในการส่งข้อความหาเพื่อน
+            microgear.chat(YOURNAME,"Hello from "+MYNAME+" at "+Date.now());
+        },1000);
+    });
+    microgear.on('disconnected', function() {
+        document.getElementById("data").innerHTML = "Now I am disconnected with netpie...";
+    });
+
+    microgear.connect(APPID);
+</script>
+
+<div id="data">_____</div>
