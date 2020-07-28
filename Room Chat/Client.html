@@ -1,0 +1,57 @@
+<script src="https://cdn.netpie.io/microgear.js"></script><!-- Microgear library -->
+
+<script>
+    const APPID = "NopparatProject"     //Application ID ของอุปกรณ์ที่เชื่อมต่อNETPIE
+    const KEY = "Se8hfIQ6FjqmfPD";    // Key ของอุปกรณ์ที่เชื่อมต่อNETPIE
+    const SECRET = "svyvlXAHCf34Cm0xyy6K9Yhci";//Secret ของอุปกรณ์ที่เชื่อมต่อNETPIE
+
+    const ALIAS = "htmlgear";        // ชื่ออุปกรณ์ที่เชื่อมต่อNETPIE
+    var slot = 1;             // slot number
+	
+    var microgear = Microgear.create({
+    key: KEY,
+    secret: SECRET,
+    alias : ALIAS
+    });
+
+    function getColor(){
+    return '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
+    }
+
+    microgear.on('message',function(topic,msg) { //ตรวจพบข้อความที่ส่งมายังอุปกรณ์
+    //กำหนดข้อความให้แสดงผลในtag id ชื่อdata
+    document.getElementById("data").innerHTML = msg; 
+    });
+
+    microgear.on('connected', function() { //ตรวจสอบเมื่อเชื่อมต่ออุปกรณ์กับNETPIE
+    microgear.setAlias(ALIAS);  //กำหนดชื่ออุปกรณ์ที่เชื่อมต่อกับNETPIE
+    document.getElementById("data").innerHTML = "Now I am connected with netpie...";         // แสดงข้อความเมื่อเชื่อมต่ออุปกรณ์กับNETPIE
+	
+    setInterval(function() {     // กำหนดให้ทำงานตลอดเวลาทุกๆ5000ms
+        var color = getColor();
+     // ส่งข้อความไปยังอุปกรณ์ชื่อhtmlgear ด้วยNETPIE
+        microgear.publish("/billboard/slot/"+slot,color);
+		
+        document.getElementById("data").innerHTML = "Publish color : "+color;
+        document.body.style.backgroundColor=color;    
+        },2000);
+    });
+
+    microgear.on('disconnected', function() {    //ตรวจสอบเมื่อตัดการเชื่อมต่ออุปกรณ์กับNETPIE
+    document.getElementById("data").innerHTML = "Now I am disconnected with netpie...";         // แสดงข้อความเมื่อตัดการเชื่อมต่ออุปกรณ์กับNETPIE
+    });
+
+// ตรวจพบอุปกรณ์ที่เชื่อมต่อNETPIE ด้วยAPPID เดียวกัน
+    microgear.on('present', function(event) {    
+        console.log(event);
+    });
+
+//ตรวจพบเหตุการณ์ที่อุปกรณ์เคยเชื่อมต่อNETPIE ด้วยAPPID เดียวกันหายไป
+    microgear.on('absent', function(event) {            
+	console.log(event);
+    });
+
+    microgear.connect(APPID);  // เชื่อมอุปกรณ์กับNETPIE
+</script>
+
+<div id="data">_____</div>
